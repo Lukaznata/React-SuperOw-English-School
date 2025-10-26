@@ -40,7 +40,7 @@ export default function ModalAdicionarAula({
   const [dataAula, setDataAula] = useState("");
   const [horaAula, setHoraAula] = useState("");
   const [valorProfessor, setValorProfessor] = useState(40);
-  const [valorEscola, setValorEscola] = useState(40);
+  const [valorEscola, setValorEscola] = useState(0);
   const [repetirDia, setRepetirDia] = useState(false);
   const [salvando, setSalvando] = useState(false);
   const [aulaCriada, setAulaCriada] = useState(false);
@@ -417,6 +417,7 @@ export default function ModalAdicionarAula({
                 <input
                   type="number"
                   value={valorProfessor}
+                  min={0}
                   onChange={(e) => setValorProfessor(Number(e.target.value))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   disabled={aulaCriada}
@@ -429,6 +430,7 @@ export default function ModalAdicionarAula({
                 <input
                   type="number"
                   value={valorEscola}
+                  min={0}
                   onChange={(e) => setValorEscola(Number(e.target.value))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   disabled={aulaCriada}
@@ -623,7 +625,7 @@ export default function ModalAdicionarAula({
                           <img
                             src={`data:image/webp;base64,${aluno.foto_perfil}`}
                             alt={aluno.nome_completo}
-                            className="w-full h-auto object-cover"
+                            className="w-full h-full object-cover"
                           />
                         ) : (
                           <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xl font-bold">

@@ -248,8 +248,9 @@ export default function ModalAluno({
 
   const formatarData = (data: string) => {
     if (!data) return "";
-    const date = new Date(data);
-    return date.toLocaleDateString("pt-BR");
+    // Espera data no formato YYYY-MM-DD
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
   };
 
   // Handlers para fechar ao clicar fora
@@ -394,7 +395,11 @@ export default function ModalAluno({
                 {modoEdicao ? (
                   <input
                     type="date"
-                    value={dadosEditados.data_nasc || ""}
+                    value={
+                      dadosEditados.data_nasc
+                        ? dadosEditados.data_nasc.slice(0, 10)
+                        : ""
+                    }
                     onChange={(e) =>
                       handleInputChange("data_nasc", e.target.value)
                     }

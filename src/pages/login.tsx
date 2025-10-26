@@ -85,13 +85,13 @@ export default function Login() {
     via-[#000000] to-[#31020c] animate-gradient flex items-center 
     justify-center"
     >
-      <div className="bg-white p-8 rounded-xl shadow-md w-96">
+      <div className="bg-white p-8 rounded-xl shadow-md w-100">
         <h1
           className="text-2xl font-bold mb-6 text-
         bg-gradient-to-r from-yellow-800 via-black/80 to-red-800 bg-clip-text text-transparent
         "
         >
-          Super-Ow Escola e INGLÊS
+          Super-Ow Escola de INGLÊS
         </h1>
 
         {showRegister ? (

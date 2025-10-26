@@ -15,6 +15,7 @@ interface Professor {
   nacionalidade: string;
   foto_perfil: string;
   situacao: boolean;
+  pix: string;
 }
 
 interface Idioma {
@@ -135,6 +136,7 @@ export default function ModalProfessor({
         pdf_contrato: professorLocal.pdf_contrato || "",
         nacionalidade: professorLocal.nacionalidade,
         situacao: novaSituacao,
+        pix: professorLocal.pix,
       };
 
       if (professorLocal.cpf) {
@@ -193,6 +195,10 @@ export default function ModalProfessor({
             : professorLocal.pdf_contrato || "",
         nacionalidade:
           dadosEditados.nacionalidade || professorLocal.nacionalidade,
+        pix:
+          dadosEditados.pix !== undefined
+            ? dadosEditados.pix
+            : professorLocal.pix || "",
       };
 
       const cpfAtualizado =
@@ -277,7 +283,7 @@ export default function ModalProfessor({
     if (file && file.type === "application/pdf") {
       const reader = new FileReader();
       reader.onload = () => {
-        const base64 = reader.result?.toString().split(",")[1];
+        const base64 = reader.result?.toString().split(",")[1]; // Base64 puro
         if (base64) {
           handleInputChange("pdf_contrato", base64);
           toast.info("Contrato carregado. Clique em 'Salvar' para confirmar.");
@@ -302,40 +308,32 @@ export default function ModalProfessor({
 
   const formatarData = (data: string) => {
     if (!data) return "";
-    const date = new Date(data);
-    return date.toLocaleDateString("pt-BR");
+    // Espera data no formato YYYY-MM-DD
+    const [ano, mes, dia] = data.split("-");
+    return `${dia}/${mes}/${ano}`;
   };
 
   const handleBaixarContrato = () => {
-    try {
-      const base64String =
-        dadosEditados.pdf_contrato !== undefined
-          ? dadosEditados.pdf_contrato
-          : professorLocal.pdf_contrato;
-
-      const byteCharacters = atob(base64String);
-      const byteNumbers = new Array(byteCharacters.length);
-
-      for (let i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-
-      const byteArray = new Uint8Array(byteNumbers);
-      const blob = new Blob([byteArray], { type: "application/pdf" });
-
-      // Criar link temporário para download
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `contrato_${professorLocal.nome_completo}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Erro ao baixar contrato:", error);
-      toast.error("Erro ao baixar o contrato. Tente novamente.");
+    const base64String =
+      dadosEditados.pdf_contrato ?? professorLocal.pdf_contrato;
+    if (!base64String) {
+      toast.error("Contrato não encontrado.");
+      return;
     }
+    console.log(professorLocal.pdf_contrato);
+    // Remove espaços e quebras de linha
+    const cleanBase64 = base64String.replace(/\s/g, ""); // remove espaços/quebras
+
+    // Cria Data URL
+    const dataUrl = `data:application/pdf;base64,${cleanBase64}`;
+
+    // Cria link e baixa
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = `contrato_${professorLocal.nome_completo}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleBackdropMouseDown = (e: React.MouseEvent) => {
@@ -594,6 +592,36 @@ export default function ModalProfessor({
                     {professorLocal.mei?.length ? (
                       <p className="text-gray-800 font-semibold">
                         {professorLocal.mei}
+                      </p>
+                    ) : (
+                      <p className="text-red-800 font-semibold">
+                        Não informado
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Pix */}
+              <div className="border-b pb-3">
+                <p className="text-sm text-gray-500 font-medium">Pix</p>
+                {modoEdicao ? (
+                  <input
+                    type="text"
+                    value={
+                      dadosEditados.pix !== undefined
+                        ? dadosEditados.pix
+                        : professorLocal.pix || ""
+                    }
+                    onChange={(e) => handleInputChange("pix", e.target.value)}
+                    placeholder="Chave Pix"
+                    className="text-gray-800 font-medium border px-2 py-1 rounded w-full"
+                  />
+                ) : (
+                  <div>
+                    {professorLocal.pix?.length ? (
+                      <p className="text-gray-800 font-semibold">
+                        {professorLocal.pix}
                       </p>
                     ) : (
                       <p className="text-red-800 font-semibold">

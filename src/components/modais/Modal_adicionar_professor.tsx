@@ -30,7 +30,7 @@ export default function ModalAdicionarProfessor({
     data_nasc: "",
     cpf: "",
     telefone: "",
-    pdf_contrato: "",
+    pdf_contrato: null,
     mei: "",
     nacionalidade: "",
     foto_perfil: "",
@@ -157,9 +157,9 @@ export default function ModalAdicionarProfessor({
     if (file && file.type === "application/pdf") {
       const reader = new FileReader();
       reader.onload = () => {
-        const base64 = reader.result?.toString().split(",")[1];
+        const base64 = reader.result?.toString().split(",")[1]; // só a Base64
         if (base64) {
-          handleInputChange("pdf_contrato", base64);
+          handleInputChange("pdf_contrato", base64); // Salva o valor completo, já com prefixo
           toast.success("Contrato carregado!");
         }
       };
@@ -203,8 +203,11 @@ export default function ModalAdicionarProfessor({
         nacionalidade: dadosProfessor.nacionalidade.trim(),
         situacao: dadosProfessor.situacao,
         foto_perfil: fotoPerfilBase64,
-        pdf_contrato: dadosProfessor.pdf_contrato || "",
       };
+
+      if (dadosProfessor.pdf_contrato) {
+        dadosParaEnviar.pdf_contrato = dadosProfessor.pdf_contrato;
+      }
 
       // Adiciona campos opcionais apenas se preenchidos
       if (dadosProfessor.cpf.trim()) {

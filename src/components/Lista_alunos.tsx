@@ -50,6 +50,10 @@ export default function Alunos() {
     Record<number, ContadoresMensalidade>
   >({});
 
+  const [filtro, setFiltro] = useState<"todos" | "atrasados" | "pendentes">(
+    "todos"
+  );
+
   // Função para formatar mensagens de erro
   const formatarMensagemErro = (mensagem: string): string => {
     let mensagemFormatada = mensagem.replace(/Value error,\s*/gi, "");
@@ -209,9 +213,25 @@ export default function Alunos() {
     carregarMensalidades(alunosAtualizados);
   };
 
-  const alunosFiltrados = alunos.filter((aluno) =>
-    aluno.nome_completo.toLowerCase().includes(busca.toLowerCase())
-  );
+  // Novo filtro de alunos
+  const alunosFiltrados = alunos.filter((aluno) => {
+    const nomeMatch = aluno.nome_completo
+      .toLowerCase()
+      .includes(busca.toLowerCase());
+    const contadores = contadoresMensalidades[aluno.id] || {
+      pagas: 0,
+      pendentes: 0,
+      atrasadas: 0,
+    };
+
+    if (filtro === "atrasados") {
+      return nomeMatch && contadores.atrasadas > 0;
+    }
+    if (filtro === "pendentes") {
+      return nomeMatch && contadores.pendentes > 0;
+    }
+    return nomeMatch;
+  });
 
   if (loading) {
     return (
@@ -242,6 +262,39 @@ export default function Alunos() {
           focus:outline-none focus:ring-2 focus:ring-blue-500 
           focus:border-transparent shadow-xl"
         />
+        {/* Botões de filtro */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setFiltro("todos")}
+            className={`px-3 py-2 rounded-lg text-sm font-medium ${
+              filtro === "todos"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => setFiltro("atrasados")}
+            className={`px-3 py-2 rounded-lg text-sm font-medium ${
+              filtro === "atrasados"
+                ? "bg-red-600 text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            Atrasados
+          </button>
+          <button
+            onClick={() => setFiltro("pendentes")}
+            className={`px-3 py-2 rounded-lg text-sm font-medium ${
+              filtro === "pendentes"
+                ? "bg-yellow-500 text-white"
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            Pendentes
+          </button>
+        </div>
         <button
           onClick={() => setModalAdicionarAberto(true)}
           className="px-6 py-2 bg-[#1a472f] text-white rounded-lg 
